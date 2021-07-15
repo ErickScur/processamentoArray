@@ -9,15 +9,18 @@ void carregaMatriz(int**, int);
 void imprimeMatriz(int**, int);
 void delimitaBordas(int**, int);
 void processarMatriz(int**, int**,int,int[3][3]);
-int formula(int**,int[3][3]);
 void liberaMatriz(int **, int);
+
 int main(){
+
   int **fonte,tam,**resultado; 
+
   int filtro[3][3]={
       {-1,0,1},
       {-2,0,2},
       {-1,0,1}
   };
+  
   tam = carregaTamanhoMatriz();
   fonte=alocaMemoriaMatriz(tam);
   resultado=alocaMemoriaMatriz(tam);
@@ -32,6 +35,8 @@ int main(){
   printf("--------------------\n");
   printf("Matriz Resultado:\n");
   imprimeMatriz(resultado,tam);
+  liberaMatriz(fonte,tam);
+  liberaMatriz(resultado,tam);
   return 0;
 }
 
@@ -82,41 +87,22 @@ void imprimeMatriz(int** mat, int tam){//Imprime a matriz
   }
 }
 void processarMatriz(int** fonte, int** resultado,int tam,int filtro[3][3]){
-  int i,j;
-  int **temp;
+  int i,j,k,l,soma;
   //Coloca 0 nas bordas de resultado
   delimitaBordas(resultado,tam);
-  for(i=1;i<tam-1;i++){
-    for(j=1;j<tam-1;j++){
-      //Aloca a memória para temp
-      temp = alocaMemoriaMatriz(3);
-      //Pega os valores vizinhos
-      temp[0][0]=fonte[i-1][j-1];
-      temp[0][1]=fonte[i-1][j];
-      temp[0][2]=fonte[i-1][j+1];
-      temp[1][0]=fonte[i][j-1];
-      temp[1][1]=fonte[i][j];
-      temp[1][2]=fonte[i][j+1];
-      temp[2][0]=fonte[i+1][j-1];
-      temp[2][1]=fonte[i+1][j];
-      temp[2][2]=fonte[i+1][j+1];
-      //Chama a função que realiza o calculo
-      resultado[i][j]=formula(temp,filtro);
-      //Libera a memória
-      liberaMatriz(temp,3);
+  for(i=0;i<tam-2;i++){
+    for(j=0;j<tam-2;j++){
+      soma = 0;
+      for(k=0;k<3;k++){
+        for(l=0;l<3;l++){
+          soma = soma + (fonte[i+k][j+l] * filtro[k][l]);
+        }
+      }
+      resultado[i+1][j+1]=soma;
     }
   }
 }
-int formula(int**temp,int filtro[3][3]){//Calcula o valor
-  int i,j,soma=0;
-  for(i=0;i<3;i++){
-    for(j=0;j<3;j++){
-      soma+= temp[i][j]*filtro[i][j];
-    }
-  }
-  return soma;
 
-}
 void liberaMatriz(int**mat, int tam){//Libera a memória da matriz
   int i;
   for(i=0;i<tam;i++){
